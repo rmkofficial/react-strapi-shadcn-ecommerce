@@ -7,7 +7,7 @@ const ProductShowcase = () => {
   const [selectedCategory, setSelectedCategory] = useState("All");
 
   return (
-    <div className="p-4">
+    <div className="p-4 pt-20 pb-20">
       <h1 className="text-center text-2xl font-bold">NEW ONES</h1>
 
       {/* Kategori sekmeleri */}

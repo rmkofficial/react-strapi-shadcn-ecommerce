@@ -1,32 +1,5 @@
 import React from "react";
 
-const products = [
-  {
-    id: 1,
-    name: "Short sleeve polo shirt",
-    price: 179,
-    imageUrl: "/images/product1.jpg",
-  },
-  {
-    id: 2,
-    name: "Short sleeve polo shirt",
-    price: 179,
-    imageUrl: "/images/product2.jpg",
-  },
-  {
-    id: 3,
-    name: "Short sleeve polo shirt",
-    price: 179,
-    imageUrl: "/images/product3.jpg",
-  },
-  {
-    id: 4,
-    name: "Short sleeve polo shirt",
-    price: 179,
-    imageUrl: "/images/product4.jpg",
-  },
-];
-
 const ProductCard = ({ product }) => {
   return (
     <div className="flex flex-col items-center p-4">
@@ -43,10 +16,47 @@ const ProductCard = ({ product }) => {
   );
 };
 
-const ProductGrid = () => {
+const ProductGrid = ({ selectedCategory }) => {
+  const products = [
+    {
+      id: 1,
+      name: "Short sleeve polo shirt",
+      price: 179,
+      category: "T-shirt",
+      imageUrl: "/images/product1.jpg",
+    },
+    {
+      id: 2,
+      name: "Short sleeve polo shirt",
+      price: 179,
+      category: "T-shirt",
+      imageUrl: "/images/product2.jpg",
+    },
+    {
+      id: 3,
+      name: "Leather shoes",
+      price: 250,
+      category: "Shoes",
+      imageUrl: "/images/product3.jpg",
+    },
+    {
+      id: 4,
+      name: "Jeans jacket",
+      price: 150,
+      category: "Jeans",
+      imageUrl: "/images/product4.jpg",
+    },
+    // Diğer ürünler...
+  ];
+
+  const filteredProducts =
+    selectedCategory === "All"
+      ? products
+      : products.filter((product) => product.category === selectedCategory);
+
   return (
     <div className="grid grid-cols-2 gap-4">
-      {products.map((product) => (
+      {filteredProducts.map((product) => (
         <ProductCard key={product.id} product={product} />
       ))}
     </div>
