@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 
 const ProductCard = ({ product }) => {
   return (
@@ -17,37 +18,31 @@ const ProductCard = ({ product }) => {
 };
 
 const ProductGrid = ({ selectedCategory }) => {
-  const products = [
-    {
-      id: 1,
-      name: "Short sleeve polo shirt",
-      price: 179,
-      category: "T-shirt",
-      imageUrl: "/images/product1.jpg",
-    },
-    {
-      id: 2,
-      name: "Short sleeve polo shirt",
-      price: 179,
-      category: "T-shirt",
-      imageUrl: "/images/product2.jpg",
-    },
-    {
-      id: 3,
-      name: "Leather shoes",
-      price: 250,
-      category: "Shoes",
-      imageUrl: "/images/product3.jpg",
-    },
-    {
-      id: 4,
-      name: "Jeans jacket",
-      price: 150,
-      category: "Jeans",
-      imageUrl: "/images/product4.jpg",
-    },
-    // Diğer ürünler...
-  ];
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:1337/api/products?populate=*"
+        );
+
+        const productsData = response.data.data.map((product) => ({
+          id: product.id,
+          name: product.attributes.name,
+          price: product.attributes.price,
+          category: product.attributes.category,
+          imageUrl: `http://localhost:1337${product.attributes.image?.data?.attributes?.url}`,
+        }));
+
+        setProducts(productsData);
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      }
+    };
+
+    fetchProducts();
+  }, []);
 
   const filteredProducts =
     selectedCategory === "All"
