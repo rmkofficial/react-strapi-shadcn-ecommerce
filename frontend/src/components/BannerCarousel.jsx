@@ -1,16 +1,39 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Slider from "react-slick";
+import axios from "axios";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
-const images = [
-  { id: 1, src: "/images/banner1.jpg" },
-  { id: 2, src: "/images/banner2.jpg" },
-  { id: 3, src: "/images/banner3.jpg" },
-];
-
 const BannerCarousel = () => {
+  const [banners, setBanners] = useState([]);
   const [activeSlide, setActiveSlide] = useState(0);
+
+  // Strapi'den verileri almak için useEffect
+  useEffect(() => {
+    const fetchBanners = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:1337/api/banners?populate=*"
+        );
+
+        const bannersData = response.data.data.map((banner) => {
+          const imageUrl =
+            banner.attributes.Image?.data[0]?.attributes?.url || "";
+          return {
+            id: banner.id,
+            title: banner.attributes.Title,
+            imageUrl: `http://localhost:1337${imageUrl}`,
+          };
+        });
+
+        setBanners(bannersData);
+      } catch (error) {
+        console.error("Error fetching banners:", error);
+      }
+    };
+
+    fetchBanners();
+  }, []);
 
   const settings = {
     dots: true,
@@ -23,12 +46,12 @@ const BannerCarousel = () => {
     afterChange: (current) => setActiveSlide(current),
     appendDots: (dots) => (
       <div className="absolute w-full flex justify-center">
-        <ul className="flex justify-center gap-16 mb-24"> {dots} </ul>
+        <ul className="flex justify-center gap-4 mb-24"> {dots} </ul>
       </div>
     ),
     customPaging: (i) => (
       <div
-        className={`w-16 h-2 rounded-lg mx-1 ${
+        className={`w-8 h-2 rounded-lg mx-1 ${
           i === activeSlide ? "bg-orange-500" : "bg-gray-300"
         }`}
       >
@@ -38,14 +61,16 @@ const BannerCarousel = () => {
   };
 
   return (
-    <div className="w-full h-screen relative">
+    <div className="w-full h-screen relative overflow-hidden">
+      {" "}
       <Slider {...settings}>
-        {images.map((image) => (
-          <div key={image.id} className="relative w-full h-screen">
+        {banners.map((banner) => (
+          <div key={banner.id} className="relative w-full h-screen">
             <img
-              src={image.src}
-              alt={`Banner ${image.id}`}
+              src={banner.imageUrl || "default-image-path.jpg"}
+              alt={banner.title}
               className="object-cover w-full h-full"
+              style={{ objectFit: "cover" }}
             />
           </div>
         ))}
