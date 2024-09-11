@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { fetchBanners } from "../api/api";
 import Slider from "react-slick";
-import axios from "axios";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
@@ -8,31 +8,17 @@ const BannerCarousel = () => {
   const [banners, setBanners] = useState([]);
   const [activeSlide, setActiveSlide] = useState(0);
 
-  // Strapi'den verileri almak için useEffect
   useEffect(() => {
-    const fetchBanners = async () => {
+    const getBanners = async () => {
       try {
-        const response = await axios.get(
-          "http://localhost:1337/api/banners?populate=*"
-        );
-
-        const bannersData = response.data.data.map((banner) => {
-          const imageUrl =
-            banner.attributes.Image?.data[0]?.attributes?.url || "";
-          return {
-            id: banner.id,
-            title: banner.attributes.Title,
-            imageUrl: `http://localhost:1337${imageUrl}`,
-          };
-        });
-
+        const bannersData = await fetchBanners();
         setBanners(bannersData);
       } catch (error) {
         console.error("Error fetching banners:", error);
       }
     };
 
-    fetchBanners();
+    getBanners();
   }, []);
 
   const settings = {
@@ -62,7 +48,6 @@ const BannerCarousel = () => {
 
   return (
     <div className="w-full h-screen relative overflow-hidden">
-      {" "}
       <Slider {...settings}>
         {banners.map((banner) => (
           <div key={banner.id} className="relative w-full h-screen">
