@@ -18,9 +18,27 @@ const ProductGrid = ({ selectedCategory }) => {
     getProducts();
   }, []);
 
+  const getProductsForAllTab = (products) => {
+    // Kategorilere göre ürünleri gruplandırma
+    const groupedProducts = products.reduce((acc, product) => {
+      if (!acc[product.category]) {
+        acc[product.category] = [];
+      }
+      acc[product.category].push(product);
+      return acc;
+    }, {});
+
+    const selectedProducts = Object.values(groupedProducts).map(
+      (categoryProducts) => categoryProducts[0]
+    );
+
+    return selectedProducts;
+  };
+
+  // Seçilen kategoriye göre ürünleri filtreleme
   const filteredProducts =
     selectedCategory === "All"
-      ? products
+      ? getProductsForAllTab(products) // Her kategoriden bir ürün
       : products.filter((product) => product.category === selectedCategory);
 
   return (
